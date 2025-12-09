@@ -1,0 +1,3 @@
+flask
+gunicorn # Used to run the Flask app reliably in production
+google-api-python-client # (Optional, if you use Sheets/Drive API calls)
