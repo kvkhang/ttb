@@ -1,59 +1,61 @@
 from flask import Flask, request, jsonify
 import json
 import os
-# Import your Google API service build functions here if needed
+import sys # <-- NEW IMPORT
 
 app = Flask(__name__)
 
-# --- Replace this with your actual processing logic ---
+# Function to ensure output goes to stderr
+def log_to_stderr(message):
+    """Writes a message to the standard error stream."""
+    sys.stderr.write(message + '\n')
+    sys.stderr.flush() # Ensures the message is sent immediately
+
+# --- Processing Logic ---
 def process_new_submission(row_number, submission_values):
-    """
-    This is where you integrate your logic from the previous step (API file download).
-    The submission_values will contain the Drive link(s).
-    """
-    print(f"--- NEW FORM SUBMISSION (Row: {row_number}) ---")
+    # CHANGED: Using log_to_stderr instead of print()
+    log_to_stderr(f"--- DEBUG: NEW FORM SUBMISSION (Row: {row_number}) ---")
     
-    # Example: Split the pipe-separated data and print the image link
+    # Example: Split the pipe-separated data and log the image link
     data_list = submission_values.split('|')
-    print(f"Timestamp: {data_list[0]}")
+    log_to_stderr(f"DEBUG: Timestamp: {data_list[0]}")
     
-    # Assuming the image link is the third piece of data (index 2)
-    # Adjust the index based on your form structure (Timestamp is 0, first question is 1, etc.)
-    image_link = data_list[2] 
-    print(f"Image Link: {image_link}")
-    
-    # 1. EXTRACT FILE ID: Use regex on image_link to get the file ID
-    # 2. DOWNLOAD FILE: Use the Drive API service and the file ID to download the image
-    # ... Your logic here ...
-    
+    if len(data_list) > 2:
+        image_link = data_list[2] 
+        log_to_stderr(f"DEBUG: Image Link: {image_link}")
+        # ... your file ID extraction logic here ...
+    else:
+        log_to_stderr(f"DEBUG: ERROR - Submission data was incomplete for row {row_number}.")
+        
     return f"Processed row {row_number} successfully."
 
 
+# --- Webhook Handler ---
 @app.route('/new_submission_hook', methods=['POST'])
 def handle_webhook():
-    """Receives the POST request sent by the Google Apps Script."""
     try:
-        # 1. Get the JSON payload
-        data = request.get_json()
+        raw_data = request.get_data(as_text=True)
+        data = json.loads(raw_data)
         
         row_num = data.get('row')
-        submission_values = data.get('data') # Pipe-separated string of all fields
-        
+        submission_values = data.get('data')
+
         if not row_num or not submission_values:
+            # Using log_to_stderr for debugging failure
+            log_to_stderr(f"ERROR: Missing row or data key. Raw payload: {raw_data}") 
             return jsonify({'error': 'Missing data in payload'}), 400
 
-        # 2. Run the processing function
         result_message = process_new_submission(row_num, submission_values)
         
-        # 3. Return a successful response (required by Google Apps Script)
         return jsonify({'status': 'success', 'message': result_message}), 200
         
     except Exception as e:
-        # Log the error and return a 500 error status
-        print(f"An error occurred: {e}")
+        # Using log_to_stderr for exceptions
+        log_to_stderr(f"FATAL ERROR in handle_webhook: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
+# ... (The rest of your boilerplate Flask code remains the same) ...
+
 if __name__ == '__main__':
-    # This block is used only for local testing, Cloud Run uses gunicorn
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
