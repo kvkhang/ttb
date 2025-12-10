@@ -1,3 +1,14 @@
+# Flask and Web Serving
 flask
-gunicorn # Used to run the Flask app reliably in production
-google-api-python-client # (Optional, if you use Sheets/Drive API calls)
+gunicorn
+
+# Google API/Auth for Drive Access
+google-api-python-client
+google-auth
+google-auth-oauthlib  # <-- CORRECTED: This is the full, required package name
+
+# Computer Vision and OCR
+opencv-python-headless
+numpy
+pytesseract
+Pillow
