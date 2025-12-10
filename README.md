@@ -1,7 +1,7 @@
-🍻 Label Processor: Cloud Run and CV Pipeline
+## 🍻 Label Processor: Cloud Run and CV Pipeline
 
 This project deploys a Python Flask application to Google Cloud Run that automatically processes image submissions from a Google Form. It uses Computer Vision (OpenCV) and OCR (Tesseract) to extract key data (Brand, Type, ABV, Volume) from beverage labels.
-🚀 Architecture Overview
+# 🚀 Architecture Overview
 
 The system works as a three-stage webhook pipeline:
 
@@ -11,7 +11,7 @@ The system works as a three-stage webhook pipeline:
 
     Processing (Cloud Run): The Flask app receives the request, downloads the image from Drive using a Service Account, runs the OpenCV/Tesseract processing pipeline, and extracts the label data.
 
-🛠️ Prerequisites
+# 🛠️ Prerequisites
 
     Google Cloud Project: A fully set up Google Cloud project with billing enabled.
 
@@ -21,7 +21,7 @@ The system works as a three-stage webhook pipeline:
 
     Python 3.11+: Installed locally for testing.
 
-⚙️ Setup and Configuration
+# ⚙️ Setup and Configuration
 Phase 1: Google Cloud Setup
 1. Enable APIs
 
