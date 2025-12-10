@@ -8,14 +8,15 @@ WORKDIR /app
 # 'apt-get update' refreshes package lists.
 # 'tesseract-ocr' is the underlying OCR executable for pytesseract.
 # 'libtesseract-dev' is required for the Python pytesseract wrapper.
-# 'libgl1' is often required for headless OpenCV (opencv-python-headless).
+# 'libgl1' is often required for headless OpenCV.
 RUN apt-get update && \
     apt-get install -y tesseract-ocr libtesseract-dev libgl1 && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy the requirements file and install Python dependencies
-# Your requirements.txt should now contain opencv-python-headless, pytesseract, etc.
 COPY requirements.txt .
+
+# Use --no-cache-dir to keep the image size small
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code
@@ -25,4 +26,5 @@ COPY app.py .
 ENV PORT 8080
 
 # Command to run the application using Gunicorn
+# 1 worker and 8 threads is a good starting point for a high-concurrency Cloud Run service
 CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 app:app
