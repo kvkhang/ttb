@@ -1,3 +1,21 @@
+# Web Framework for the Cloud Run endpoint
 flask
-gunicorn # Used to run the Flask app reliably in production
-google-api-python-client # (Optional, if you use Sheets/Drive API calls)
+
+# Production Web Server (required by Cloud Run/Dockerfile)
+gunicorn
+
+# Google API Client Libraries (for Drive access and optional Vision AI)
+google-api-python-client 
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+
+# Core Computer Vision Libraries
+# OpenCV is the standard library for image processing (grayscale, thresholding, etc.)
+opencv-python-headless 
+
+# Tesseract OCR Wrapper (if using the free, open-source OCR engine)
+pytesseract
+
+# Pillow (PIL) is often required by pytesseract for image handling
+Pillow
